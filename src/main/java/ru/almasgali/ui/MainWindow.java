@@ -20,10 +20,11 @@ public class MainWindow extends JFrame {
     private int readBytes;
     private final DefaultTableModel model;
     private final FileLoader fl;
-    private JLabel intLabel;
-    private JLabel longLabel;
-    private JLabel floatLabel;
-    private JLabel doubleLabel;
+    private JTextField intText;
+    private JTextField longText;
+    private JTextField floatText;
+    private JTextField doubleText;
+    private JTextField pageText;
     private JButton signButton;
 
 
@@ -71,17 +72,35 @@ public class MainWindow extends JFrame {
 
         JPanel labelPanel = new JPanel();
         labelPanel.setPreferredSize(new Dimension(280, Constants.HEIGHT));
-        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
+        labelPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        intLabel = new JLabel(Constants.INT_LABEL_PREFIX);
-        floatLabel = new JLabel(Constants.FLOAT_LABEL_PREFIX);
-        longLabel = new JLabel(Constants.LONG_LABEL_PREFIX);
-        doubleLabel = new JLabel(Constants.DOUBLE_LABEL_PREFIX);
+        Dimension textSize = new Dimension(190, 50);
+
+        JLabel intLabel = new JLabel(Constants.INT_LABEL_PREFIX);
+        intText = new JTextField();
+        intText.setPreferredSize(textSize);
+        intText.setEditable(false);
+        JLabel floatLabel = new JLabel(Constants.FLOAT_LABEL_PREFIX);
+        floatText = new JTextField();
+        floatText.setPreferredSize(textSize);
+        floatText.setEditable(false);
+        JLabel longLabel = new JLabel(Constants.LONG_LABEL_PREFIX);
+        longText = new JTextField();
+        longText.setPreferredSize(textSize);
+        longText.setEditable(false);
+        JLabel doubleLabel = new JLabel(Constants.DOUBLE_LABEL_PREFIX);
+        doubleText = new JTextField();
+        doubleText.setPreferredSize(textSize);
+        doubleText.setEditable(false);
 
         labelPanel.add(intLabel);
+        labelPanel.add(intText);
         labelPanel.add(floatLabel);
+        labelPanel.add(floatText);
         labelPanel.add(longLabel);
+        labelPanel.add(longText);
         labelPanel.add(doubleLabel);
+        labelPanel.add(doubleText);
 
         signButton = new JButton(Constants.SIGNED);
         signButton.addActionListener(e -> {
@@ -97,6 +116,12 @@ public class MainWindow extends JFrame {
         });
 
         labelPanel.add(signButton);
+
+        labelPanel.add(new JLabel("Page: "));
+        pageText = new JTextField();
+        pageText.setPreferredSize(new Dimension(50, 28));
+        pageText.setEditable(false);
+        labelPanel.add(pageText);
 
         panel.add(labelPanel, BorderLayout.WEST);
 
@@ -146,10 +171,12 @@ public class MainWindow extends JFrame {
 
     private void loadPreviousChunk() throws IOException {
         readBytes = fl.readPrevChunk();
+        pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
     private void loadNextChunk() throws IOException {
         readBytes = fl.readNextChunk();
+        pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
     private String getHexValue(int index) {
@@ -197,22 +224,22 @@ public class MainWindow extends JFrame {
     private void fill8bLabels(String longHex) {
         long longValue = Long.parseUnsignedLong(longHex, 16);
         if (signButton.getText().equals(Constants.SIGNED)) {
-            longLabel.setText(Constants.LONG_LABEL_PREFIX + longValue);
-            doubleLabel.setText(Constants.DOUBLE_LABEL_PREFIX + Double.longBitsToDouble(longValue));
+            longText.setText(Long.toString(longValue));
+            doubleText.setText(Double.toString(Double.longBitsToDouble(longValue)));
         } else {
-            longLabel.setText(Constants.LONG_LABEL_PREFIX + Long.toUnsignedString(longValue));
-            doubleLabel.setText(Constants.DOUBLE_LABEL_PREFIX + Double.longBitsToDouble(longValue));
+            longText.setText(Long.toUnsignedString(longValue));
+            doubleText.setText(Double.toString(Double.longBitsToDouble(longValue)));
         }
     }
 
     private void fill4bLabels(String intHex) {
         int intValue = Integer.parseUnsignedInt(intHex, 16);
         if (signButton.getText().equals(Constants.SIGNED)) {
-            intLabel.setText(Constants.INT_LABEL_PREFIX + intValue);
-            floatLabel.setText(Constants.FLOAT_LABEL_PREFIX + Float.intBitsToFloat(intValue));
+            intText.setText(Integer.toString(intValue));
+            floatText.setText(Float.toString(Float.intBitsToFloat(intValue)));
         } else {
-            intLabel.setText(Constants.INT_LABEL_PREFIX + Integer.toUnsignedString(intValue));
-            floatLabel.setText(Constants.FLOAT_LABEL_PREFIX + Float.intBitsToFloat(intValue));
+            intText.setText(Integer.toUnsignedString(intValue));
+            floatText.setText(Float.toString(Float.intBitsToFloat(intValue)));
         }
     }
 

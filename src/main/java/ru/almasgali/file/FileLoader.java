@@ -48,4 +48,8 @@ public class FileLoader {
     public byte[] getChunk() {
         return chunk;
     }
+    
+    public int getChunkOrder() {
+        return chunkOrder;
+    }
 }

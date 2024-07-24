@@ -8,8 +8,8 @@ public class Main {
         try {
             MainWindow mainWindow = new MainWindow(
                     "HEX-editor",
-                    "./src/main/resources/test",
-                    4, 8);
+                    "./src/main/resources/test-small",
+                    1, 8);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
