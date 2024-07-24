@@ -39,10 +39,40 @@ public class MainWindow extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setSize(new Dimension(WIDTH, HEIGHT));
+        panel.setLayout(new BorderLayout());
 
         JScrollPane scroll = new JScrollPane(jTable);
-
         panel.add(scroll);
+
+        Dimension buttonSize = new Dimension(48, 24);
+
+        JButton buttonUp = new JButton("↑");
+//        buttonUp.setSize(buttonSize);
+        buttonUp.addActionListener((event) -> {
+            try {
+                loadPreviousChunk();
+                if (readBytes != -1) {
+                    display();
+                }
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        });
+        panel.add(buttonUp, BorderLayout.NORTH);
+
+        JButton buttonDown = new JButton("↓");
+//        buttonDown.setSize(buttonSize);
+        buttonDown.addActionListener((event) -> {
+            try {
+                loadNextChunk();
+                if (readBytes != -1) {
+                    display();
+                }
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        });
+        panel.add(buttonDown, BorderLayout.SOUTH);
 
         add(panel);
         setSize(WIDTH, HEIGHT);
@@ -64,15 +94,15 @@ public class MainWindow extends JFrame {
                 } else if (index < readBytes) {
                     model.setValueAt(getValue(index), i, j);
                     ++index;
+                } else {
+                    model.setValueAt("", i, j);
                 }
             }
         }
     }
 
     private void loadPreviousChunk() throws IOException {
-        if (fl.getChunkOrder() > 1) {
-            fl.readPrevChunk();
-        }
+        readBytes = fl.readPrevChunk();
     }
 
     private void loadNextChunk() throws IOException {

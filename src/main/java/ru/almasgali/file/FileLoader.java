@@ -28,21 +28,24 @@ public class FileLoader {
     }
 
     public int readNextChunk() throws IOException {
-        ++chunkOrder;
-        return raf.read(chunk);
+        int result = raf.read(chunk);
+        if (result != -1) {
+            ++chunkOrder;
+        }
+        return result;
     }
 
     public int readPrevChunk() throws IOException {
-        --chunkOrder;
-        setOffsetToPreviousChunk();
-        return raf.read(chunk);
+        if (chunkOrder > 1) {
+            --chunkOrder;
+            setOffsetToPreviousChunk();
+            return raf.read(chunk);
+        } else {
+            return -1;
+        }
     }
 
     public byte[] getChunk() {
         return chunk;
-    }
-
-    public int getChunkOrder() {
-        return chunkOrder;
     }
 }
