@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-public class ColorRenderer extends DefaultTableCellRenderer {
+public class RowHeaderColorRenderer extends DefaultTableCellRenderer {
 
     private static final Color DEFAULT_GRAY = new Color(239, 239, 239, 255);
 
@@ -19,7 +19,6 @@ public class ColorRenderer extends DefaultTableCellRenderer {
         cell.setBackground(DEFAULT_GRAY);
         cell.setFocusable(false);
         setHorizontalAlignment(CENTER);
-//        cell.setText(table.getValueAt(row, column).toString());
         return this;
     }
 }

@@ -16,11 +16,10 @@ public class FileLoader {
         this.chunkSize = chunkSize;
         this.chunk = new byte[chunkSize];
         this.chunkOrder = 0;
-//        raf.read(chunk);
     }
 
     private void setOffsetToPreviousChunk() throws IOException {
-        long newPos = raf.getFilePointer() - chunkSize * 2;
+        long newPos = raf.getFilePointer() - chunkSize * 2L;
         if (newPos < 0) {
             newPos = 0;
         }
