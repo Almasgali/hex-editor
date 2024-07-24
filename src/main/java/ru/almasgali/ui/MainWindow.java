@@ -13,7 +13,8 @@ public class MainWindow extends JFrame {
 
     private int rows;
     private int cols;
-    private DefaultTableModel model;
+    private int readBytes;
+    private final DefaultTableModel model;
     private final FileLoader fl;
     private static final int WIDTH = 640;
     private static final int HEIGHT = 480;
@@ -33,11 +34,11 @@ public class MainWindow extends JFrame {
         tcm.getColumn(0).setHeaderValue("");
         tcm.getColumn(0).setCellRenderer(new ColorRenderer());
         for (int i = 1; i <= cols; ++i) {
-            tcm.getColumn(i).setHeaderValue(i);
+            tcm.getColumn(i).setHeaderValue(i - 1);
         }
 
         JPanel panel = new JPanel();
-        panel.setSize(new Dimension(640, 480));
+        panel.setSize(new Dimension(WIDTH, HEIGHT));
 
         JScrollPane scroll = new JScrollPane(jTable);
 
@@ -60,8 +61,7 @@ public class MainWindow extends JFrame {
             for (int j = 0; j <= cols; ++j) {
                 if (j == 0) {
                     model.setValueAt(i, i, j);
-
-                } else {
+                } else if (index < readBytes) {
                     model.setValueAt(getValue(index), i, j);
                     ++index;
                 }
@@ -76,7 +76,7 @@ public class MainWindow extends JFrame {
     }
 
     private void loadNextChunk() throws IOException {
-        fl.readNextChunk();
+        readBytes = fl.readNextChunk();
     }
 
     private String getValue(int index) {

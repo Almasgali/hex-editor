@@ -9,7 +9,7 @@ public class Main {
             MainWindow mainWindow = new MainWindow(
                     "HEX-editor",
                     "./src/main/resources/test",
-                    3, 8);
+                    33, 16);
 //            JFrame mainFrame = new JFrame();
 //            JPanel panel = new JPanel();
 //            mainFrame.setSize(new Dimension(640, 480));
