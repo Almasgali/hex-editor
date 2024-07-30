@@ -86,7 +86,7 @@ public class MainWindow extends JFrame {
         panel.add(scroll);
 
         JPanel labelPanel = new JPanel();
-        labelPanel.setPreferredSize(new Dimension(280, Constants.HEIGHT));
+        labelPanel.setPreferredSize(new Dimension(300, Constants.HEIGHT));
         labelPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         Dimension textSize = new Dimension(190, 50);
@@ -196,6 +196,7 @@ public class MainWindow extends JFrame {
             JTextField text,
             Dimension textSize) {
         JLabel label = new JLabel(LabelPrefix);
+        label.setFont(Constants.LABEL_FONT);
         text.setPreferredSize(textSize);
         text.setEditable(false);
         panel.add(label);
@@ -241,6 +242,9 @@ public class MainWindow extends JFrame {
                 .getColumnModel()
                 .getSelectionModel()
                 .getLeadSelectionIndex();
+        if (leadX < 0 || leadY < 0) {
+            return;
+        }
         fillByteValue(model.getValueAt(leadX, leadY).toString());
         StringBuilder intHex = new StringBuilder();
         StringBuilder longHex = new StringBuilder();

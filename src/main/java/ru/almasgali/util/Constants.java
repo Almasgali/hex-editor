@@ -13,5 +13,6 @@ public class Constants {
     public static final int WIDTH = 1280;
     public static final int HEIGHT = 720;
     public static final Font TABLE_FONT = new Font("Roboto", Font.PLAIN, 16);
+    public static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 16);
     public static final String BYTE_LABEL_PREFIX = "byte: ";
 }

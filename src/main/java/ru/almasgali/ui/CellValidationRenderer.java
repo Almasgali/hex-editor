@@ -33,7 +33,6 @@ public class CellValidationRenderer extends DefaultTableCellRenderer {
                     + "</span>"
                     + text.substring(text.indexOf(textToSearch) + textToSearch.length())
                     + "</html>";
-            System.out.println(html);
             cell.setText(html);
         }
         return cell;
