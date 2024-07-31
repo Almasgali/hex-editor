@@ -21,6 +21,9 @@ public class CellValidationRenderer extends DefaultTableCellRenderer {
             boolean hasFocus,
             int row, int column) {
         JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (value == null) {
+            return cell;
+        }
         String text = value.toString();
         String textToSearch = searchField.getText();
         if (!text.matches("[0-9a-f]{2}")) {

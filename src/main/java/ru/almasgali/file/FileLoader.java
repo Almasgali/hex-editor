@@ -30,19 +30,38 @@ public class FileLoader {
 
     public void writeReplacing(byte[] data) throws IOException {
         setOffsetForWriting(data.length);
+        read = data.length;
         raf.write(data);
     }
 
-//    public void writeAppending(byte[] data) throws IOException {
-//        int writeChunkSize = 2048;
-//        byte[] prevData = new byte[writeChunkSize];
-//        int read = raf.read(prevData);
-//        raf.write(data);
-//        while (read != -1) {
-//            setOffsetForWriting();
-//            raf.write(data);
-//        }
-//    }
+    public void writeAppending(byte[] data) throws IOException {
+        int writeChunkSize = Math.max(2048, data.length);
+        byte[] prevData = new byte[writeChunkSize];
+        int read = raf.read(prevData);
+        if (read == -1) {
+            raf.write(data);
+            this.read += data.length;
+            return;
+        } else {
+            setOffsetForWriting(read);
+        }
+        data = new byte[writeChunkSize];
+        long startPos = raf.getFilePointer();
+        boolean flag = true;
+        while (read != -1) {
+            int newRead;
+            if (flag) {
+                newRead = raf.read(data);
+                raf.write(prevData, 0, read);
+            } else {
+                newRead = raf.read(prevData);
+                raf.write(data, 0, read);
+            }
+            read = newRead;
+            flag = !flag;
+        }
+        raf.seek(startPos);
+    }
 
     private void setOffsetToPreviousChunk() throws IOException {
         long newPos = raf.getFilePointer() - chunkSize - read;

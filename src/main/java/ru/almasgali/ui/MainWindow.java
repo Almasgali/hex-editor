@@ -12,10 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.io.IOException;
 
 public class MainWindow extends JFrame {
@@ -23,7 +20,7 @@ public class MainWindow extends JFrame {
     private final JTable table;
     private int rows;
     private int cols;
-    private int readBytes;
+    private int availableBytes;
     private final DefaultTableModel model;
     private final FileLoader fl;
     private JTextField byteText;
@@ -34,6 +31,7 @@ public class MainWindow extends JFrame {
     private JTextField pageText;
     private JButton signButton;
     private JTextField searchField;
+    private TablePopupMenu popupMenu;
 
     public MainWindow(String title, String path, int rows, int cols) throws HeadlessException, IOException {
         super(title);
@@ -50,6 +48,7 @@ public class MainWindow extends JFrame {
         doubleText = new JTextField();
 
         table = new JTable(model);
+        table.addMouseListener(new PopupMenuListener());
         table.setFont(Constants.TABLE_FONT);
         table.getTableHeader().setFont(Constants.TABLE_FONT);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -58,6 +57,8 @@ public class MainWindow extends JFrame {
         table.getColumnModel()
                 .getSelectionModel()
                 .addListSelectionListener(new ColumnListener());
+
+        popupMenu = new TablePopupMenu(table);
 
         TableColumnModel tcm = table.getColumnModel();
         tcm.getColumn(0).setHeaderValue("");
@@ -70,6 +71,7 @@ public class MainWindow extends JFrame {
         JPanel panel = getPanel(table);
 
         add(panel);
+
         setSize(Constants.MAIN_WINDOW_SIZE);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -148,7 +150,7 @@ public class MainWindow extends JFrame {
     private void pageUp() {
         try {
             loadPreviousChunk();
-            if (readBytes != -1) {
+            if (availableBytes != -1) {
                 display();
             }
         } catch (IOException e) {
@@ -159,7 +161,7 @@ public class MainWindow extends JFrame {
     private void pageDown() {
         try {
             loadNextChunk();
-            if (readBytes != -1) {
+            if (availableBytes != -1) {
                 display();
             }
         } catch (IOException e) {
@@ -227,7 +229,7 @@ public class MainWindow extends JFrame {
             for (int j = 0; j <= cols; ++j) {
                 if (j == 0) {
                     model.setValueAt(i, i, j);
-                } else if (index < readBytes) {
+                } else if (index < availableBytes) {
                     model.setValueAt(getHexValue(index), i, j);
                     ++index;
                 } else {
@@ -240,13 +242,13 @@ public class MainWindow extends JFrame {
 
     private void loadPreviousChunk() throws IOException {
         saveChanges();
-        readBytes = fl.readPrevChunk();
+        availableBytes = fl.readPrevChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
     private void loadNextChunk() throws IOException {
         saveChanges();
-        readBytes = fl.readNextChunk();
+        availableBytes = fl.readNextChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
@@ -297,8 +299,8 @@ public class MainWindow extends JFrame {
 
     private void saveChanges() throws IOException {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < model.getRowCount(); ++i) {
-            for (int j = 1; j < model.getColumnCount(); ++j) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 1; j <= cols; ++j) {
                 Object valueAt = model.getValueAt(i, j);
                 if (valueAt == null) {
                     return;
@@ -306,9 +308,27 @@ public class MainWindow extends JFrame {
                 result.append(valueAt);
             }
         }
-        byte[] data = ByteUtil.decodeHexString(result.toString());
-        fl.writeReplacing(data);
-//        System.out.println(result);
+        if (result.length() > 0) {
+            System.out.println("WRITTEN: " + result);
+            byte[] data = ByteUtil.decodeHexString(result.toString());
+            fl.writeReplacing(data);
+        }
+
+        result = new StringBuilder();
+        for (int i = rows; i < model.getRowCount(); ++i) {
+            for (int j = 1; j <= cols; ++j) {
+                Object valueAt = model.getValueAt(i, j);
+                if (valueAt == null) {
+                    return;
+                }
+                result.append(valueAt);
+            }
+        }
+        if (result.length() > 0) {
+            System.out.println("APPENDED: " + result);
+            byte[] data = ByteUtil.decodeHexString(result.toString());
+            fl.writeAppending(data);
+        }
     }
 
     private void fillByteValue(String byteHex) {
@@ -357,8 +377,6 @@ public class MainWindow extends JFrame {
         }
     }
 
-
-
     @Override
     public void dispose() {
         try {
@@ -366,6 +384,8 @@ public class MainWindow extends JFrame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        // to prevent resource leak
+        popupMenu = null;
         super.dispose();
     }
 
@@ -387,6 +407,24 @@ public class MainWindow extends JFrame {
             displayValues();
         }
     }
+
+    private class PopupMenuListener extends MouseAdapter {
+
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger())
+                doPop(e);
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger())
+                doPop(e);
+        }
+
+        private void doPop(MouseEvent e) {
+            popupMenu.show(table, e.getX(), e.getY());
+        }
+    }
+
     private class PageUpAction extends AbstractAction {
 
         @Override
