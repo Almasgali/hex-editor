@@ -78,7 +78,7 @@ public class SetupWindow extends JFrame {
         } else if (rows > 0 && cols > 0) {
             dispose();
             MainWindow mainWindow = new MainWindow(
-                    Constants.TITLE,
+                    Constants.MAIN_TITLE,
                     path,
                     rows, cols);
         }

@@ -16,4 +16,6 @@ public class RowHeaderTableModel extends DefaultTableModel {
         }
         return super.isCellEditable(row, column);
     }
+
+
 }

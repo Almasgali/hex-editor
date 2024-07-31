@@ -10,16 +10,18 @@ public class FileLoader {
     private final RandomAccessFile raf;
     private final byte[] chunk;
     private int chunkOrder;
+    private int read;
 
     public FileLoader(String path, int chunkSize) throws IOException {
         this.raf = new RandomAccessFile(path, FILE_MODE);
         this.chunkSize = chunkSize;
         this.chunk = new byte[chunkSize];
         this.chunkOrder = 0;
+        this.read = 0;
     }
 
-    private void setOffsetForWriting() throws IOException {
-        long newPos = raf.getFilePointer() - chunkSize;
+    private void setOffsetForWriting(int off) throws IOException {
+        long newPos = raf.getFilePointer() - off;
         if (newPos < 0) {
             newPos = 0;
         }
@@ -27,22 +29,23 @@ public class FileLoader {
     }
 
     public void writeReplacing(byte[] data) throws IOException {
-        setOffsetForWriting();
+        setOffsetForWriting(data.length);
         raf.write(data);
     }
 
-    public void writeAppending(byte[] data) throws IOException {
-        setOffsetForWriting();
-        byte[] prevData = new byte[data.length];
-        int read = raf.read(prevData);
-        while (read != -1) {
-            setOffsetForWriting();
-            raf.write(data);
-        }
-    }
+//    public void writeAppending(byte[] data) throws IOException {
+//        int writeChunkSize = 2048;
+//        byte[] prevData = new byte[writeChunkSize];
+//        int read = raf.read(prevData);
+//        raf.write(data);
+//        while (read != -1) {
+//            setOffsetForWriting();
+//            raf.write(data);
+//        }
+//    }
 
     private void setOffsetToPreviousChunk() throws IOException {
-        long newPos = raf.getFilePointer() - chunkSize * 2L;
+        long newPos = raf.getFilePointer() - chunkSize - read;
         if (newPos < 0) {
             newPos = 0;
         }
@@ -50,18 +53,23 @@ public class FileLoader {
     }
 
     public int readNextChunk() throws IOException {
-        int result = raf.read(chunk);
-        if (result != -1) {
+        int r = raf.read(chunk);
+        if (r != -1) {
+            read = r;
             ++chunkOrder;
         }
-        return result;
+        return read;
     }
 
     public int readPrevChunk() throws IOException {
         if (chunkOrder > 1) {
             --chunkOrder;
             setOffsetToPreviousChunk();
-            return raf.read(chunk);
+            int r =  raf.read(chunk);
+            if (r != -1) {
+                read = r;
+            }
+            return r;
         } else {
             return -1;
         }

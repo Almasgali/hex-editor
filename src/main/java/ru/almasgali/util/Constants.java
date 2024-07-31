@@ -12,7 +12,8 @@ public class Constants {
     public static final Font TABLE_FONT = new Font("Roboto", Font.PLAIN, 16);
     public static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 16);
     public static final String BYTE_LABEL_PREFIX = "byte: ";
-    public static final String TITLE = "HEX-editor";
+    public static final String SETUP_TITLE = "Setup";
+    public static final String MAIN_TITLE = "HEX-editor";
     public static final String ROWS_LABEL = "rows:";
     public static final String COLUMNS_LABEL = "columns:";
     private static final int SETUP_WIDTH = 320;

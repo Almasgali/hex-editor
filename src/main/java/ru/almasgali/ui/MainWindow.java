@@ -12,6 +12,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class MainWindow extends JFrame {
 
         add(panel);
         setSize(Constants.MAIN_WINDOW_SIZE);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -78,12 +80,24 @@ public class MainWindow extends JFrame {
         display();
     }
 
+    private void setupKeyBindings(JComponent component) {
+        component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke("UP"), "pageUp");
+        component.getActionMap().put("pageUp", new PageUpAction());
+
+        component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke("DOWN"), "pageDown");
+        component.getActionMap().put("pageDown", new PageDownAction());
+    }
+
     private JPanel getPanel(JTable table) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setSize(Constants.MAIN_WINDOW_SIZE);
 
         JScrollPane scroll = new JScrollPane(table);
         panel.add(scroll);
+
+        setupKeyBindings(panel);
 
         JPanel labelPanel = new JPanel();
         labelPanel.setPreferredSize(Constants.LABEL_PANEL_SIZE);
@@ -122,31 +136,35 @@ public class MainWindow extends JFrame {
         panel.add(labelPanel, BorderLayout.WEST);
 
         JButton buttonUp = new JButton("↑");
-        buttonUp.addActionListener((event) -> {
-            try {
-                loadPreviousChunk();
-                if (readBytes != -1) {
-                    display();
-                }
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-        });
+        buttonUp.addActionListener(e -> pageUp());
         panel.add(buttonUp, BorderLayout.NORTH);
 
         JButton buttonDown = new JButton("↓");
-        buttonDown.addActionListener((event) -> {
-            try {
-                loadNextChunk();
-                if (readBytes != -1) {
-                    display();
-                }
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-        });
+        buttonDown.addActionListener(e -> pageDown());
         panel.add(buttonDown, BorderLayout.SOUTH);
         return panel;
+    }
+
+    private void pageUp() {
+        try {
+            loadPreviousChunk();
+            if (readBytes != -1) {
+                display();
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void pageDown() {
+        try {
+            loadNextChunk();
+            if (readBytes != -1) {
+                display();
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private JTextField getSearchField() {
@@ -244,7 +262,7 @@ public class MainWindow extends JFrame {
                 .getColumnModel()
                 .getSelectionModel()
                 .getLeadSelectionIndex();
-        if (leadX < 0 || leadY < 0) {
+        if (leadX < 0 || leadY <= 0) {
             return;
         }
         fillByteValue(model.getValueAt(leadX, leadY).toString());
@@ -339,7 +357,20 @@ public class MainWindow extends JFrame {
         }
     }
 
+
+
+    @Override
+    public void dispose() {
+        try {
+            saveChanges();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        super.dispose();
+    }
+
     private class RowListener implements ListSelectionListener {
+
         public void valueChanged(ListSelectionEvent event) {
             if (event.getValueIsAdjusting()) {
                 return;
@@ -347,13 +378,27 @@ public class MainWindow extends JFrame {
             displayValues();
         }
     }
-
     private class ColumnListener implements ListSelectionListener {
+
         public void valueChanged(ListSelectionEvent event) {
             if (event.getValueIsAdjusting()) {
                 return;
             }
             displayValues();
+        }
+    }
+    private class PageUpAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            pageUp();
+        }
+    }
+    private class PageDownAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            pageDown();
         }
     }
 }

@@ -34,6 +34,8 @@ public class CellValidationRenderer extends DefaultTableCellRenderer {
                     + text.substring(text.indexOf(textToSearch) + textToSearch.length())
                     + "</html>";
             cell.setText(html);
+        } else {
+            cell.setForeground(Color.BLACK);
         }
         return cell;
     }
