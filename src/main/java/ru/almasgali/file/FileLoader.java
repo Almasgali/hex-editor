@@ -18,6 +18,29 @@ public class FileLoader {
         this.chunkOrder = 0;
     }
 
+    private void setOffsetForWriting() throws IOException {
+        long newPos = raf.getFilePointer() - chunkSize;
+        if (newPos < 0) {
+            newPos = 0;
+        }
+        raf.seek(newPos);
+    }
+
+    public void writeReplacing(byte[] data) throws IOException {
+        setOffsetForWriting();
+        raf.write(data);
+    }
+
+    public void writeAppending(byte[] data) throws IOException {
+        setOffsetForWriting();
+        byte[] prevData = new byte[data.length];
+        int read = raf.read(prevData);
+        while (read != -1) {
+            setOffsetForWriting();
+            raf.write(data);
+        }
+    }
+
     private void setOffsetToPreviousChunk() throws IOException {
         long newPos = raf.getFilePointer() - chunkSize * 2L;
         if (newPos < 0) {

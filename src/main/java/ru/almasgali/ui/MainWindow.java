@@ -68,7 +68,7 @@ public class MainWindow extends JFrame {
         JPanel panel = getPanel(table);
 
         add(panel);
-        setSize(Constants.WIDTH, Constants.HEIGHT);
+        setSize(Constants.MAIN_WINDOW_SIZE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -80,13 +80,13 @@ public class MainWindow extends JFrame {
 
     private JPanel getPanel(JTable table) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setSize(new Dimension(Constants.WIDTH, Constants.HEIGHT));
+        panel.setSize(Constants.MAIN_WINDOW_SIZE);
 
         JScrollPane scroll = new JScrollPane(table);
         panel.add(scroll);
 
         JPanel labelPanel = new JPanel();
-        labelPanel.setPreferredSize(new Dimension(300, Constants.HEIGHT));
+        labelPanel.setPreferredSize(Constants.LABEL_PANEL_SIZE);
         labelPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         Dimension textSize = new Dimension(190, 50);
@@ -221,11 +221,13 @@ public class MainWindow extends JFrame {
     }
 
     private void loadPreviousChunk() throws IOException {
+        saveChanges();
         readBytes = fl.readPrevChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
     private void loadNextChunk() throws IOException {
+        saveChanges();
         readBytes = fl.readNextChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
@@ -273,6 +275,22 @@ public class MainWindow extends JFrame {
         fill4bLabels(intHex.toString());
 
         fill8bLabels(longHex.toString());
+    }
+
+    private void saveChanges() throws IOException {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < model.getRowCount(); ++i) {
+            for (int j = 1; j < model.getColumnCount(); ++j) {
+                Object valueAt = model.getValueAt(i, j);
+                if (valueAt == null) {
+                    return;
+                }
+                result.append(valueAt);
+            }
+        }
+        byte[] data = ByteUtil.decodeHexString(result.toString());
+        fl.writeReplacing(data);
+//        System.out.println(result);
     }
 
     private void fillByteValue(String byteHex) {

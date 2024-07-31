@@ -10,6 +10,7 @@ public class SetupWindow extends JFrame {
 
     private final JTextField rowsText;
     private final JTextField colsText;
+    private final JTextField fileText;
 
     public SetupWindow(String title) throws HeadlessException {
         super(title);
@@ -17,15 +18,30 @@ public class SetupWindow extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        JLabel rowsLabel = new JLabel("rows:");
+        JLabel rowsLabel = new JLabel(Constants.ROWS_LABEL);
         rowsLabel.setFont(Constants.LABEL_FONT);
         rowsText = new JTextField();
-        rowsText.setPreferredSize(new Dimension(200, 50));
+        Dimension textFieldSize = new Dimension(200, 50);
+        rowsText.setPreferredSize(textFieldSize);
 
-        JLabel colsLabel = new JLabel("columns:");
+        JLabel colsLabel = new JLabel(Constants.COLUMNS_LABEL);
         colsLabel.setFont(Constants.LABEL_FONT);
         colsText = new JTextField();
-        colsText.setPreferredSize(new Dimension(200, 50));
+        colsText.setPreferredSize(textFieldSize);
+
+        JButton fileButton = new JButton("Choose file...");
+        fileText = new JTextField();
+        fileText.setEditable(false);
+        fileText.setPreferredSize(textFieldSize);
+
+        JFileChooser chooser = new JFileChooser();
+
+        fileButton.addActionListener(e -> {
+            int val = chooser.showOpenDialog(panel);
+            if (val == JFileChooser.APPROVE_OPTION) {
+                fileText.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        });
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(e -> {
@@ -40,12 +56,14 @@ public class SetupWindow extends JFrame {
         panel.add(rowsText);
         panel.add(colsLabel);
         panel.add(colsText);
+        panel.add(fileButton);
+        panel.add(fileText);
         panel.add(okButton);
         getContentPane().add(panel);
 
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(300, 200));
+        setPreferredSize(Constants.SETUP_WINDOW_SIZE);
         pack();
         setVisible(true);
     }
@@ -53,11 +71,15 @@ public class SetupWindow extends JFrame {
     private void validateAndRun() throws IOException {
         int rows = validateTextField("rows", rowsText);
         int cols = validateTextField("cols", colsText);
-        if (rows > 0 && cols > 0) {
+//        String path = fileText.getText();
+        String path = "./src/main/resources/test-small";
+        if (path.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "You didn't choose file.");
+        } else if (rows > 0 && cols > 0) {
             dispose();
             MainWindow mainWindow = new MainWindow(
-                    "HEX-editor",
-                    "./src/main/resources/test-small",
+                    Constants.TITLE,
+                    path,
                     rows, cols);
         }
     }

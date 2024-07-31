@@ -9,10 +9,17 @@ public class Constants {
     public static final String DOUBLE_LABEL_PREFIX = "double (8b): ";
     public static final String SIGNED = "Signed";
     public static final String UNSIGNED = "Unsigned";
-    public static final String TOO_BIG_NUMBER = "Too Big Number";
-    public static final int WIDTH = 1280;
-    public static final int HEIGHT = 720;
     public static final Font TABLE_FONT = new Font("Roboto", Font.PLAIN, 16);
     public static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 16);
     public static final String BYTE_LABEL_PREFIX = "byte: ";
+    public static final String TITLE = "HEX-editor";
+    public static final String ROWS_LABEL = "rows:";
+    public static final String COLUMNS_LABEL = "columns:";
+    private static final int SETUP_WIDTH = 320;
+    private static final int SETUP_HEIGHT = 200;
+    public static final Dimension SETUP_WINDOW_SIZE = new Dimension(SETUP_WIDTH, SETUP_HEIGHT);
+    private static final int MAIN_WIDTH = 1280;
+    private static final int MAIN_HEIGHT = 720;
+    public static final Dimension MAIN_WINDOW_SIZE = new Dimension(MAIN_WIDTH, MAIN_HEIGHT);
+    public static final Dimension LABEL_PANEL_SIZE = new Dimension(300, MAIN_HEIGHT);
 }
