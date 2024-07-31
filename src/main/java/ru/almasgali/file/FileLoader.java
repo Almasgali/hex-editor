@@ -44,6 +44,8 @@ public class FileLoader {
             return;
         } else {
             setOffsetForWriting(read);
+            this.read += data.length;
+            raf.write(data);
         }
         data = new byte[writeChunkSize];
         long startPos = raf.getFilePointer();
@@ -52,9 +54,11 @@ public class FileLoader {
             int newRead;
             if (flag) {
                 newRead = raf.read(data);
+                setOffsetForWriting(newRead);
                 raf.write(prevData, 0, read);
             } else {
                 newRead = raf.read(prevData);
+                setOffsetForWriting(newRead);
                 raf.write(data, 0, read);
             }
             read = newRead;
