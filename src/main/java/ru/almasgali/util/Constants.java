@@ -16,8 +16,8 @@ public class Constants {
     public static final String MAIN_TITLE = "HEX-editor";
     public static final String ROWS_LABEL = "rows:";
     public static final String COLUMNS_LABEL = "columns:";
-    private static final int SETUP_WIDTH = 320;
-    private static final int SETUP_HEIGHT = 200;
+    private static final int SETUP_WIDTH = 335;
+    private static final int SETUP_HEIGHT = 250;
     public static final Dimension SETUP_WINDOW_SIZE = new Dimension(SETUP_WIDTH, SETUP_HEIGHT);
     private static final int MAIN_WIDTH = 1280;
     private static final int MAIN_HEIGHT = 720;

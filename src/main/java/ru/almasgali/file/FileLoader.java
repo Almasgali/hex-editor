@@ -30,7 +30,7 @@ public class FileLoader {
 
     public void writeReplacing(byte[] data) throws IOException {
         setOffsetForWriting(data.length);
-        read = data.length;
+        this.read = data.length;
         raf.write(data);
     }
 
@@ -38,28 +38,34 @@ public class FileLoader {
         int writeChunkSize = Math.max(2048, data.length);
         byte[] prevData = new byte[writeChunkSize];
         int read = raf.read(prevData);
+        long revertForRead = raf.getFilePointer();
         if (read == -1) {
             raf.write(data);
             this.read += data.length;
             return;
-        } else {
-            setOffsetForWriting(read);
-            this.read += data.length;
-            raf.write(data);
         }
+        setOffsetForWriting(read);
+        this.read += data.length;
+        raf.write(data);
+        long revertForWrite = raf.getFilePointer();
         data = new byte[writeChunkSize];
         long startPos = raf.getFilePointer();
         boolean flag = true;
         while (read != -1) {
+            raf.seek(revertForRead);
             int newRead;
             if (flag) {
                 newRead = raf.read(data);
-                setOffsetForWriting(newRead);
+                revertForRead = raf.getFilePointer();
+                raf.seek(revertForWrite);
                 raf.write(prevData, 0, read);
+                revertForWrite = raf.getFilePointer();
             } else {
                 newRead = raf.read(prevData);
-                setOffsetForWriting(newRead);
+                revertForRead = raf.getFilePointer();
+                raf.seek(revertForWrite);
                 raf.write(data, 0, read);
+                revertForWrite = raf.getFilePointer();
             }
             read = newRead;
             flag = !flag;
@@ -68,7 +74,7 @@ public class FileLoader {
     }
 
     private void setOffsetToPreviousChunk() throws IOException {
-        long newPos = raf.getFilePointer() - chunkSize - read;
+        long newPos = raf.getFilePointer() - chunkSize - this.read;
         if (newPos < 0) {
             newPos = 0;
         }
@@ -78,19 +84,19 @@ public class FileLoader {
     public int readNextChunk() throws IOException {
         int r = raf.read(chunk);
         if (r != -1) {
-            read = r;
+            this.read = r;
             ++chunkOrder;
         }
-        return read;
+        return this.read;
     }
 
     public int readPrevChunk() throws IOException {
         if (chunkOrder > 1) {
             --chunkOrder;
             setOffsetToPreviousChunk();
-            int r =  raf.read(chunk);
+            int r = raf.read(chunk);
             if (r != -1) {
-                read = r;
+                this.read = r;
             }
             return r;
         } else {
@@ -101,7 +107,7 @@ public class FileLoader {
     public byte[] getChunk() {
         return chunk;
     }
-    
+
     public int getChunkOrder() {
         return chunkOrder;
     }
