@@ -22,5 +22,5 @@ public class Constants {
     private static final int MAIN_WIDTH = 1280;
     private static final int MAIN_HEIGHT = 720;
     public static final Dimension MAIN_WINDOW_SIZE = new Dimension(MAIN_WIDTH, MAIN_HEIGHT);
-    public static final Dimension LABEL_PANEL_SIZE = new Dimension(300, MAIN_HEIGHT);
+    public static final Dimension LABEL_PANEL_SIZE = new Dimension(310, MAIN_HEIGHT);
 }

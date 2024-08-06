@@ -242,14 +242,22 @@ public class MainWindow extends JFrame {
 
     private void loadPreviousChunk() throws IOException {
         saveChanges();
+        resetRowsCount();
         availableBytes = fl.readPrevChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
     }
 
     private void loadNextChunk() throws IOException {
         saveChanges();
+        resetRowsCount();
         availableBytes = fl.readNextChunk();
         pageText.setText(String.valueOf(fl.getChunkOrder()));
+    }
+
+    private void resetRowsCount() {
+        while (model.getRowCount() > rows) {
+            model.removeRow(0);
+        }
     }
 
     private String getHexValue(int index) {
@@ -267,7 +275,7 @@ public class MainWindow extends JFrame {
         if (leadX < 0 || leadY <= 0) {
             return;
         }
-        fillByteValue(model.getValueAt(leadX, leadY).toString());
+        fill1bLabel(model.getValueAt(leadX, leadY).toString());
         StringBuilder intHex = new StringBuilder();
         StringBuilder longHex = new StringBuilder();
         for (int i = 0; i < 8; ++i) {
@@ -309,7 +317,6 @@ public class MainWindow extends JFrame {
             }
         }
         if (result.length() > 0) {
-            System.out.println("WRITTEN: " + result);
             byte[] data = ByteUtil.decodeHexString(result.toString());
             fl.writeReplacing(data);
         }
@@ -325,13 +332,12 @@ public class MainWindow extends JFrame {
             }
         }
         if (result.length() > 0) {
-            System.out.println("APPENDED: " + result);
             byte[] data = ByteUtil.decodeHexString(result.toString());
             fl.writeAppending(data);
         }
     }
 
-    private void fillByteValue(String byteHex) {
+    private void fill1bLabel(String byteHex) {
         byte b;
         try {
             b = (byte) Integer.parseInt(byteHex, 16);

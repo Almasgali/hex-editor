@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
 }
 
 group = "ru.almasgali"
@@ -18,6 +19,10 @@ dependencies {
     
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+application {
+    mainClass = "ru.almasgali.Main"
 }
 
 tasks.test {

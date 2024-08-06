@@ -14,6 +14,8 @@ public class TablePopupMenu extends JPopupMenu {
     private int leadX;
     private int leadY;
     private final JMenuItem copyCell;
+    private final JMenuItem cutCell;
+    private final JMenuItem cutCellFillZero;
     private final JMenuItem pasteCellReplace;
     private final JMenuItem pasteCellAppend;
     private JTable table;
@@ -26,6 +28,36 @@ public class TablePopupMenu extends JPopupMenu {
         copyCell = new JMenuItem("Copy cell");
         copyCell.addActionListener(e -> {
             String value = table.getValueAt(leadX, leadY).toString();
+            clipboard.setContents(new StringSelection(value), null);
+        });
+        cutCell = new JMenuItem("Cut cell (remove)");
+        cutCell.addActionListener(e -> {
+            String value = table.getValueAt(leadX, leadY).toString();
+            clipboard.setContents(new StringSelection(value), null);
+            for (int i = leadX; i < table.getRowCount(); ++i) {
+                for (int j = 1; j < table.getColumnCount(); ++j) {
+                    if (i == leadX && j < leadY) {
+                        continue;
+                    }
+                    int nextI = i;
+                    int nextJ = j + 1;
+                    if (nextJ == table.getColumnCount()) {
+                        nextJ = 0;
+                        ++nextI;
+                    }
+                    if (nextI == table.getRowCount()) {
+                        table.setValueAt("", i, j);
+                        return;
+                    }
+                    Object next = table.getValueAt(nextI, nextJ);
+                    table.setValueAt(next, i, j);
+                }
+            }
+        });
+        cutCellFillZero = new JMenuItem("Cut cell (fill with 0)");
+        cutCellFillZero.addActionListener(e -> {
+            String value = table.getValueAt(leadX, leadY).toString();
+            table.setValueAt("00", leadX, leadY);
             clipboard.setContents(new StringSelection(value), null);
         });
         pasteCellReplace = new JMenuItem("Paste cell (replace)");
@@ -68,6 +100,10 @@ public class TablePopupMenu extends JPopupMenu {
         });
 
         add(copyCell);
+        addSeparator();
+        add(cutCell);
+        add(cutCellFillZero);
+        addSeparator();
         add(pasteCellReplace);
         add(pasteCellAppend);
     }
