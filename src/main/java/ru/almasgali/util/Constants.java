@@ -7,6 +7,7 @@ public class Constants {
     public static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 16);
     //    public static final Font BUTTON_FONT = new Font("Verdana", Font.BOLD, 14);
     public static final String BYTE_LABEL_PREFIX = "byte: ";
+    public static final String SHORT_LABEL_PREFIX = "short (2b): ";
     public static final String INT_LABEL_PREFIX = "int (4b): ";
     public static final String FLOAT_LABEL_PREFIX = "float (4b): ";
     public static final String LONG_LABEL_PREFIX = "long (8b): ";

@@ -24,6 +24,7 @@ public class MainWindow extends JFrame {
     private final DefaultTableModel model;
     private final FileLoader fl;
     private JTextField byteText;
+    private JTextField shortText;
     private JTextField intText;
     private JTextField longText;
     private JTextField floatText;
@@ -41,6 +42,7 @@ public class MainWindow extends JFrame {
         this.model = new RowHeaderTableModel(rows, cols + 1);
         this.searchField = getSearchField();
 
+        shortText = new JTextField();
         byteText = new JTextField();
         intText = new JTextField();
         floatText = new JTextField();
@@ -108,6 +110,7 @@ public class MainWindow extends JFrame {
         Dimension textSize = new Dimension(190, 50);
 
         addLabelToPanel(labelPanel, Constants.BYTE_LABEL_PREFIX, byteText, textSize);
+        addLabelToPanel(labelPanel, Constants.SHORT_LABEL_PREFIX, shortText, textSize);
         addLabelToPanel(labelPanel, Constants.INT_LABEL_PREFIX, intText, textSize);
         addLabelToPanel(labelPanel, Constants.FLOAT_LABEL_PREFIX, floatText, textSize);
         addLabelToPanel(labelPanel, Constants.LONG_LABEL_PREFIX, longText, textSize);
@@ -276,6 +279,7 @@ public class MainWindow extends JFrame {
             return;
         }
         fill1bLabel(model.getValueAt(leadX, leadY).toString());
+        StringBuilder shortHex = new StringBuilder();
         StringBuilder intHex = new StringBuilder();
         StringBuilder longHex = new StringBuilder();
         for (int i = 0; i < 8; ++i) {
@@ -286,6 +290,11 @@ public class MainWindow extends JFrame {
                 ++curX;
             }
             if (curX >= rows) {
+                if (i >= 2) {
+                    fill2bLabel(shortHex.toString());
+                } else {
+                    fill2bLabel("0");
+                }
                 if (i >= 4) {
                     fill4bLabels(intHex.toString());
                 } else {
@@ -298,10 +307,13 @@ public class MainWindow extends JFrame {
             if (i < 4) {
                 intHex.append(value);
             }
+            if (i < 2) {
+                shortHex.append(value);
+            }
             longHex.append(value);
         }
+        fill2bLabel(shortHex.toString());
         fill4bLabels(intHex.toString());
-
         fill8bLabels(longHex.toString());
     }
 
@@ -348,6 +360,20 @@ public class MainWindow extends JFrame {
             byteText.setText(Byte.toString(b));
         } else {
             byteText.setText(Integer.toString(b & 0xff));
+        }
+    }
+
+    private void fill2bLabel(String shortHex) {
+        short s;
+        try {
+            s = (short) Integer.parseInt(shortHex, 16);
+        } catch (NumberFormatException e) {
+            s = 0;
+        }
+        if (signButton.getText().equals(Constants.SIGNED)) {
+            shortText.setText(Short.toString(s));
+        } else {
+            shortText.setText(Integer.toString(Short.toUnsignedInt(s)));
         }
     }
 
