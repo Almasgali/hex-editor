@@ -9,14 +9,12 @@ public class FileLoader {
     private final int chunkSize;
     private final RandomAccessFile raf;
     private final byte[] chunk;
-    private int chunkOrder;
     private int read;
 
     public FileLoader(String path, int chunkSize) throws IOException {
         this.raf = new RandomAccessFile(path, FILE_MODE);
         this.chunkSize = chunkSize;
         this.chunk = new byte[chunkSize];
-        this.chunkOrder = 0;
         this.read = 0;
     }
 
@@ -85,14 +83,12 @@ public class FileLoader {
         int r = raf.read(chunk);
         if (r != -1) {
             this.read = r;
-            ++chunkOrder;
         }
         return this.read;
     }
 
     public int readPrevChunk() throws IOException {
-        if (chunkOrder > 1) {
-            --chunkOrder;
+        if (raf.getFilePointer() > chunkSize) {
             setOffsetToPreviousChunk();
             int r = raf.read(chunk);
             if (r != -1) {
@@ -108,7 +104,7 @@ public class FileLoader {
         return chunk;
     }
 
-    public int getChunkOrder() {
-        return chunkOrder;
+    public long getChunkOrder() throws IOException {
+        return (raf.getFilePointer() + chunkSize - 1) / chunkSize;
     }
 }

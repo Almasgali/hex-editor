@@ -58,7 +58,7 @@ public class MainWindow extends JFrame {
                 .getSelectionModel()
                 .addListSelectionListener(new ColumnListener());
 
-        popupMenu = new TablePopupMenu(table);
+        popupMenu = new TablePopupMenu(model);
 
         TableColumnModel tcm = table.getColumnModel();
         tcm.getColumn(0).setHeaderValue("");
@@ -427,7 +427,14 @@ public class MainWindow extends JFrame {
         }
 
         private void doPop(MouseEvent e) {
-            popupMenu.show(table, e.getX(), e.getY());
+            int leadX = table
+                    .getSelectionModel()
+                    .getLeadSelectionIndex();
+            int leadY = table
+                    .getColumnModel()
+                    .getSelectionModel()
+                    .getLeadSelectionIndex();
+            popupMenu.show(table, e.getX(), e.getY(), leadX, leadY);
         }
     }
 

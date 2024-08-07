@@ -29,7 +29,7 @@ public class SetupWindow extends JFrame {
         colsText = new JTextField();
         colsText.setPreferredSize(textFieldSize);
 
-        JButton fileButton = new JButton("Choose file...");
+        JButton fileButton = new JButton(Constants.CHOOSE_FILE);
         fileText = new JTextField();
         fileText.setEditable(false);
         fileText.setPreferredSize(textFieldSize);
@@ -43,7 +43,7 @@ public class SetupWindow extends JFrame {
             }
         });
 
-        JButton okButton = new JButton("OK");
+        JButton okButton = new JButton(Constants.OK);
         okButton.addActionListener(e -> {
             try {
                 validateAndRun();
@@ -71,8 +71,8 @@ public class SetupWindow extends JFrame {
     private void validateAndRun() throws IOException {
         int rows = validateTextField("rows", rowsText);
         int cols = validateTextField("cols", colsText);
-//        String path = fileText.getText();
-        String path = "./src/main/resources/test-small";
+        String path = fileText.getText();
+//        String path = "./src/main/resources/test-small";
         if (path.isEmpty()) {
             JOptionPane.showMessageDialog(this, "You didn't choose file.");
         } else if (rows > 0 && cols > 0) {
