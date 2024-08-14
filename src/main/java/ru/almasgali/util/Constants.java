@@ -1,11 +1,11 @@
 package ru.almasgali.util;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
 
 public class Constants {
     public static final Font TABLE_FONT = new Font("Roboto", Font.PLAIN, 16);
     public static final Font LABEL_FONT = new Font("Century Gothic", Font.PLAIN, 16);
-    //    public static final Font BUTTON_FONT = new Font("Verdana", Font.BOLD, 14);
     public static final String BYTE_LABEL_PREFIX = "byte: ";
     public static final String SHORT_LABEL_PREFIX = "short (2b): ";
     public static final String INT_LABEL_PREFIX = "int (4b): ";

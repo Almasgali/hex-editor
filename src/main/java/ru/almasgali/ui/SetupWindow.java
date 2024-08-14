@@ -2,8 +2,16 @@ package ru.almasgali.ui;
 
 import ru.almasgali.util.Constants;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.HeadlessException;
 import java.io.IOException;
 
 public class SetupWindow extends JFrame {
@@ -72,7 +80,6 @@ public class SetupWindow extends JFrame {
         int rows = validateTextField("rows", rowsText);
         int cols = validateTextField("cols", colsText);
         String path = fileText.getText();
-//        String path = "./src/main/resources/test-small";
         if (path.isEmpty()) {
             JOptionPane.showMessageDialog(this, "You didn't choose file.");
         } else if (rows > 0 && cols > 0) {

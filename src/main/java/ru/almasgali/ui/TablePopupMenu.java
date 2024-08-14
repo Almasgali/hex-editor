@@ -2,9 +2,11 @@ package ru.almasgali.ui;
 
 import ru.almasgali.util.Constants;
 
-import javax.swing.*;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
